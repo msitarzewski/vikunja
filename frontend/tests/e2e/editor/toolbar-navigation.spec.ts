@@ -25,6 +25,9 @@ test.describe('Editor toolbar keyboard navigation', () => {
 
 		const editor = description.locator('.tiptap__editor .tiptap.ProseMirror')
 		await expect(editor).toBeVisible()
+		// Edit mode focuses the editor on the next animation frame. Wait for it, or under load it
+		// lands after the toolbar button is focused below and takes focus back.
+		await expect(editor).toBeFocused()
 
 		const toolbar = description.locator('.editor-toolbar')
 		await expect(toolbar).toHaveAttribute('role', 'toolbar')
