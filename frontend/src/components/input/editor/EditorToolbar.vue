@@ -7,263 +7,33 @@
 		@keydown="onToolbarKeydown"
 		@focusin="onToolbarFocusin"
 	>
-		<div class="editor-toolbar__segment">
+		<div
+			v-for="(segment, index) in segments"
+			:key="segment[0].id"
+			class="editor-toolbar__segment"
+		>
 			<BaseButton
-				v-tooltip="$t('input.editor.heading1')"
+				v-for="action in segment"
+				:key="action.id"
+				v-tooltip="$t(action.label)"
 				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-				:aria-pressed="editor.isActive('heading', { level: 1 })"
-				@click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+				:class="{ 'is-active': action.isActive?.() }"
+				:aria-pressed="action.toggle ? action.isActive?.() : undefined"
+				:title="action.title"
+				@click="action.run"
 			>
 				<span class="icon">
-					<Icon :icon="['fas', 'header']" />
+					<Icon :icon="action.icon" />
 					<span
+						v-if="action.iconText"
 						class="icon__lower-text"
 						aria-hidden="true"
-					>1</span>
+					>{{ action.iconText }}</span>
 				</span>
-				<span class="is-sr-only">{{ $t('input.editor.heading1') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.heading2')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
-				:aria-pressed="editor.isActive('heading', { level: 2 })"
-				@click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'header']" />
-					<span
-						class="icon__lower-text"
-						aria-hidden="true"
-					>2</span>
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.heading2') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.heading3')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
-				:aria-pressed="editor.isActive('heading', { level: 3 })"
-				@click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'header']" />
-					<span
-						class="icon__lower-text"
-						aria-hidden="true"
-					>3</span>
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.heading3') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<BaseButton
-				v-tooltip="$t('input.editor.bold')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('bold') }"
-				:aria-pressed="editor.isActive('bold')"
-				@click="editor.chain().focus().toggleBold().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'bold']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.bold') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.italic')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('italic') }"
-				:aria-pressed="editor.isActive('italic')"
-				@click="editor.chain().focus().toggleItalic().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'italic']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.italic') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.underline')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('underline') }"
-				:aria-pressed="editor.isActive('underline')"
-				@click="editor.chain().focus().toggleUnderline().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'underline']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.underline') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.strikethrough')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('strike') }"
-				:aria-pressed="editor.isActive('strike')"
-				@click="editor.chain().focus().toggleStrike().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'strikethrough']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.strikethrough') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<BaseButton
-				v-tooltip="$t('input.editor.code')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('codeBlock') }"
-				:aria-pressed="editor.isActive('codeBlock')"
-				@click="editor.chain().focus().toggleCodeBlock().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'code']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.code') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.quote')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('blockquote') }"
-				:aria-pressed="editor.isActive('blockquote')"
-				@click="editor.chain().focus().toggleBlockquote().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'quote-right']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.quote') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<BaseButton
-				v-tooltip="$t('input.editor.bulletList')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('bulletList') }"
-				:aria-pressed="editor.isActive('bulletList')"
-				@click="editor.chain().focus().toggleBulletList().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'list-ul']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.bulletList') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.orderedList')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('orderedList') }"
-				:aria-pressed="editor.isActive('orderedList')"
-				@click="editor.chain().focus().toggleOrderedList().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'list-ol']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.orderedList') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.taskList')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('taskList') }"
-				:aria-pressed="editor.isActive('taskList')"
-				@click="editor.chain().focus().toggleTaskList().run()"
-			>
-				<span class="icon">
-					<Icon icon="list-check" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.taskList') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<BaseButton
-				v-tooltip="$t('input.editor.image')"
-				class="editor-toolbar__button"
-				@click="e => emit('imageUploadClicked', e)"
-			>
-				<span class="icon">
-					<Icon icon="image" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.image') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<BaseButton
-				v-tooltip="$t('input.editor.link')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('link') }"
-				title="set link"
-				@click="setLink"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'link']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.link') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.text')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('paragraph') }"
-				title="paragraph"
-				@click="editor.chain().focus().setParagraph().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'paragraph']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.text') }}</span>
-			</BaseButton>
-
-			<BaseButton
-				v-tooltip="$t('input.editor.horizontalRule')"
-				class="editor-toolbar__button"
-				@click="editor.chain().focus().setHorizontalRule().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'ruler-horizontal']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.horizontalRule') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<BaseButton
-				v-tooltip="$t('input.editor.undo')"
-				class="editor-toolbar__button"
-				@click="editor.chain().focus().undo().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'undo']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.undo') }}</span>
-			</BaseButton>
-			<BaseButton
-				v-tooltip="$t('input.editor.redo')"
-				class="editor-toolbar__button"
-				@click="editor.chain().focus().redo().run()"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'redo']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.redo') }}</span>
-			</BaseButton>
-		</div>
-
-		<div class="editor-toolbar__segment">
-			<!-- table -->
-			<BaseButton
-				v-tooltip="$t('input.editor.table.title')"
-				class="editor-toolbar__button"
-				:class="{ 'is-active': editor.isActive('table') }"
-				@click="toggleTableMode"
-			>
-				<span class="icon">
-					<Icon :icon="['fas', 'table']" />
-				</span>
-				<span class="is-sr-only">{{ $t('input.editor.table.title') }}</span>
+				<span class="is-sr-only">{{ $t(action.label) }}</span>
 			</BaseButton>
 			<div
-				v-if="tableMode"
+				v-if="tableMode && index === segments.length - 1"
 				class="editor-toolbar__table-buttons"
 			>
 				<BaseButton
@@ -384,6 +154,7 @@
 <script setup lang="ts">
 import {ref, onMounted, onBeforeUnmount} from 'vue'
 import type {Editor} from '@tiptap/vue-3'
+import type {IconProp} from '@fortawesome/fontawesome-svg-core'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import {setLinkInEditor} from '@/components/input/editor/setLinkInEditor'
@@ -399,6 +170,165 @@ const tableMode = ref(false)
 function toggleTableMode() {
 	tableMode.value = !tableMode.value
 }
+
+interface ToolbarAction {
+	id: string,
+	label: string,
+	icon: IconProp,
+	iconText?: string,
+	title?: string,
+	// Exposes isActive as aria-pressed.
+	toggle?: boolean,
+	isActive?: () => boolean,
+	run: (event: MouseEvent) => void,
+}
+
+const headings: ToolbarAction[] = ([1, 2, 3] as const).map(level => ({
+	id: `heading${level}`,
+	label: `input.editor.heading${level}`,
+	icon: ['fas', 'header'],
+	iconText: String(level),
+	toggle: true,
+	isActive: () => props.editor.isActive('heading', {level}),
+	run: () => props.editor.chain().focus().toggleHeading({level}).run(),
+}))
+
+const segments: ToolbarAction[][] = [
+	headings,
+	[
+		{
+			id: 'bold',
+			label: 'input.editor.bold',
+			icon: ['fas', 'bold'],
+			toggle: true,
+			isActive: () => props.editor.isActive('bold'),
+			run: () => props.editor.chain().focus().toggleBold().run(),
+		},
+		{
+			id: 'italic',
+			label: 'input.editor.italic',
+			icon: ['fas', 'italic'],
+			toggle: true,
+			isActive: () => props.editor.isActive('italic'),
+			run: () => props.editor.chain().focus().toggleItalic().run(),
+		},
+		{
+			id: 'underline',
+			label: 'input.editor.underline',
+			icon: ['fas', 'underline'],
+			toggle: true,
+			isActive: () => props.editor.isActive('underline'),
+			run: () => props.editor.chain().focus().toggleUnderline().run(),
+		},
+		{
+			id: 'strike',
+			label: 'input.editor.strikethrough',
+			icon: ['fas', 'strikethrough'],
+			toggle: true,
+			isActive: () => props.editor.isActive('strike'),
+			run: () => props.editor.chain().focus().toggleStrike().run(),
+		},
+	],
+	[
+		{
+			id: 'codeBlock',
+			label: 'input.editor.code',
+			icon: ['fas', 'code'],
+			toggle: true,
+			isActive: () => props.editor.isActive('codeBlock'),
+			run: () => props.editor.chain().focus().toggleCodeBlock().run(),
+		},
+		{
+			id: 'blockquote',
+			label: 'input.editor.quote',
+			icon: ['fas', 'quote-right'],
+			toggle: true,
+			isActive: () => props.editor.isActive('blockquote'),
+			run: () => props.editor.chain().focus().toggleBlockquote().run(),
+		},
+	],
+	[
+		{
+			id: 'bulletList',
+			label: 'input.editor.bulletList',
+			icon: ['fas', 'list-ul'],
+			toggle: true,
+			isActive: () => props.editor.isActive('bulletList'),
+			run: () => props.editor.chain().focus().toggleBulletList().run(),
+		},
+		{
+			id: 'orderedList',
+			label: 'input.editor.orderedList',
+			icon: ['fas', 'list-ol'],
+			toggle: true,
+			isActive: () => props.editor.isActive('orderedList'),
+			run: () => props.editor.chain().focus().toggleOrderedList().run(),
+		},
+		{
+			id: 'taskList',
+			label: 'input.editor.taskList',
+			icon: 'list-check',
+			toggle: true,
+			isActive: () => props.editor.isActive('taskList'),
+			run: () => props.editor.chain().focus().toggleTaskList().run(),
+		},
+	],
+	[
+		{
+			id: 'image',
+			label: 'input.editor.image',
+			icon: 'image',
+			run: event => emit('imageUploadClicked', event),
+		},
+	],
+	[
+		{
+			id: 'link',
+			label: 'input.editor.link',
+			icon: ['fas', 'link'],
+			title: 'set link',
+			isActive: () => props.editor.isActive('link'),
+			run: event => setLink(event),
+		},
+		{
+			id: 'paragraph',
+			label: 'input.editor.text',
+			icon: ['fas', 'paragraph'],
+			title: 'paragraph',
+			isActive: () => props.editor.isActive('paragraph'),
+			run: () => props.editor.chain().focus().setParagraph().run(),
+		},
+		{
+			id: 'horizontalRule',
+			label: 'input.editor.horizontalRule',
+			icon: ['fas', 'ruler-horizontal'],
+			run: () => props.editor.chain().focus().setHorizontalRule().run(),
+		},
+	],
+	[
+		{
+			id: 'undo',
+			label: 'input.editor.undo',
+			icon: ['fas', 'undo'],
+			run: () => props.editor.chain().focus().undo().run(),
+		},
+		{
+			id: 'redo',
+			label: 'input.editor.redo',
+			icon: ['fas', 'redo'],
+			run: () => props.editor.chain().focus().redo().run(),
+		},
+	],
+	[
+		{
+			id: 'table',
+			label: 'input.editor.table.title',
+			icon: ['fas', 'table'],
+			isActive: () => props.editor.isActive('table'),
+			run: toggleTableMode,
+		},
+	],
+]
 
 // Roving tabindex: the toolbar is a single Tab stop and arrow keys move between
 // buttons, so Tab always leaves the toolbar (to the editor content) instead of
